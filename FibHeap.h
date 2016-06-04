@@ -56,7 +56,7 @@ private:
 	FibHeapNode* _merge(FibHeapNode* a, FibHeapNode* b);
 	void _make_child(FibHeapNode *child, FibHeapNode *parent);
 	void _consolidate();
-	void _unparentAll(FibHeapNode* x);
+	void _unparent_all(FibHeapNode* x);
 	FibHeapNode* _extract_min_node();
 	void _decrease_key(FibHeapNode* x, int newKey);
 	void _cut(FibHeapNode* x, FibHeapNode* y);

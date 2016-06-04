@@ -109,7 +109,7 @@ FibHeapNode* FibHeap::_extract_min_node()
 	FibHeapNode* min = m_minNode;
 	if ( min != nullptr) // the heap is not empty
 	{
-		_unparentAll(min->child);
+		_unparent_all(min->child);
 		_merge(min, min->child); // merge the child circular list into root
 		_remove_from_circular_list(min);
 		if ( min == min->right) // the heap will be empty after the operation
@@ -125,7 +125,7 @@ FibHeapNode* FibHeap::_extract_min_node()
 }
 
 /*make all nodes' parent nullptr in a circular list*/
-void FibHeap::_unparentAll(FibHeapNode* x)
+void FibHeap::_unparent_all(FibHeapNode* x)
 {
 	if(x == nullptr)
 		return;
