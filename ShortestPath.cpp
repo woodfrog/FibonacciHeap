@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-#include "..\..\FibHeap.h"
+#include "FibHeap_sp.h"
 
 using namespace fib_heap; 
 using namespace std;

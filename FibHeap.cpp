@@ -178,7 +178,7 @@ void FibHeap::_consolidate()
 			m_minNode = iter;
 		iter = iter->right;
 	} while( iter != x );
-	delete A;
+	delete []A;
 }
 
 void FibHeap::_make_child(FibHeapNode *child, FibHeapNode *parent)
@@ -229,7 +229,7 @@ void FibHeap::_cut(FibHeapNode* x, FibHeapNode* y)
 
 /***********************************************************************
 * Continue cutting on the path from the decreased node to the root
-* Until meet one node, which is a root or is unmarked
+	Until meet one node, which is a root or is unmarked
 ***********************************************************************/
 void FibHeap::_cascading_cut(FibHeapNode* y)
 {
@@ -249,8 +249,8 @@ void FibHeap::_cascading_cut(FibHeapNode* y)
 
 /*********************************************************************
 * t1 is used to traversal the circular list. 
-* When t1 == x for the second time (the first time is at t1's initialization),
-* t1 has completed the traversal.
+  When t1 == x for the second time (the first time is at t1's initialization),
+  t1 has completed the traversal.
 **********************************************************************/
 void FibHeap::_clear(FibHeapNode* x)
 {
