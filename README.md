@@ -18,51 +18,56 @@ Secondly, Fibonacci Heap is **to some extent based on Binomial Heap**. The diffe
 ###Component of Structure
 **The second part is to show the component of the structure. We now show the definition of class FibHeap.**
 
-	/*File: FibHeap.h*/
-    struct FibHeapNode
-    {
-        int key; // assume the element is int
-        FibHeapNode* left;
-        FibHeapNode* right;
-        FibHeapNode* parent;
-        FibHeapNode* child;
-        int degree;
-        bool mark;
-    };
+```cpp
+
+/*File: FibHeap.h*/
+
+struct FibHeapNode
+{
+    int key; // assume the element is int
+    FibHeapNode* left;
+    FibHeapNode* right;
+    FibHeapNode* parent;
+    FibHeapNode* child;
+    int degree;
+    bool mark;
+};
 
 
-    class FibHeap {
-    public:
-        FibHeapNode* m_minNode;
-        int m_numOfNodes;
-        
-        FibHeap(){  // initialize a new and empty Fib Heap
-        	m_minNode = nullptr;
-       	 	m_numOfNodes = 0;
-        }
-        
-        ~FibHeap() {
-        	_clear(m_minNode);
-        }
-        
-        /* Insert a node with key value new_key
-           and return the inserted node*/
-        FibHeapNode* insert(int newKey);
-        
-        /* Merge current heap with another*/
-        void merge(FibHeap &another); 
-        
-        /* Return the key of the minimum node*/ 
-        int  extract_min(); 
-        
-        /* Decrease the key of node x to newKey*/   
-        void decrease_key(FibHeapNode* x, int newKey);
-        
-        /*Delete a specified node*/
-        void delete_node(FibHeapNode* x);
-    private:
-		/*omitted, can be checked in source file*/
-    };
+class FibHeap {
+public:
+    FibHeapNode* m_minNode;
+    int m_numOfNodes;
+    
+    FibHeap(){  // initialize a new and empty Fib Heap
+    	m_minNode = nullptr;
+   	 	m_numOfNodes = 0;
+    }
+    
+    ~FibHeap() {
+    	_clear(m_minNode);
+    }
+    
+    /* Insert a node with key value new_key
+       and return the inserted node*/
+    FibHeapNode* insert(int newKey);
+    
+    /* Merge current heap with another*/
+    void merge(FibHeap &another); 
+    
+    /* Return the key of the minimum node*/ 
+    int  extract_min(); 
+    
+    /* Decrease the key of node x to newKey*/   
+    void decrease_key(FibHeapNode* x, int newKey);
+    
+    /*Delete a specified node*/
+    void delete_node(FibHeapNode* x);
+private:
+	/*omitted, can be checked in source file*/
+};
+
+```
 
 As shown in the code, a Fibonacci Heap has **a pointer to the minimum node**, and **an integer recording the amount of nodes**. And for each node, it has pointers to its right/left sibling as well as to its child and parent.**A single node may have many children, but since all children are stored in a circular linked list, we only need a pointer to one of the children to access all of them. This is similar to the implementation of Binomial Heap**. And each node also has a degree to represent how many children it has. At last, each node's mark enables Fibonacci Heap to have a perfect decrease_key function which costs only O(1) amortized time. The importance of **mark** will be explained later when we analyze the time complexity.  
 
