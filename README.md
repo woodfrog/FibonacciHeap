@@ -6,11 +6,11 @@ Fibonacci Heap is wildly adopted to implement the famous Dijkstra's algorithm du
 ![](https://github.com/woodfrog/FibonacciHeap/blob/master/readme_pics/1.png?raw=true)
 
 
-Fibonacci Heap is similar to a **Binomial Heap**. The difference is that Fibonacci Heap **adopts the method of lazy-merge and lazy-insert**, which saves potential, (a term used in Amortized Analysis). Those saved potentials reduce the time complexity of decrease_key and extract_min in future computations. The detailed analysis will be presented in Chapter 4.
+Fibonacci Heap is similar to a **Binomial Heap**. The difference is that Fibonacci Heap **adopts the method of lazy-merge and lazy-insert**, which saves potential, (a term used in Amortized Analysis). Those saved potentials reduce the time complexity of **decrease_key** and **extract_min** in future computations. The detailed analysis will be presented in Chapter 4.
 
 ## Data Structure and Implementation
 ### 1. Overview
- This chapter talks about the structure of a Fibonacci Heap. A Fibonacci Heap is a collection of heap-ordered trees same as a Binomial Heap. All of the roots of a Fibonacci Heap are in a **circular linked list** instead of an array. Non-root nodes will also be placed in a circular linked list with all of its siblings. The following two pictures visualize this data structure. [1] (a) shows what the heap looks like and (b) shows how it is implemented using pointers and circular linked list.
+ This chapter talks about the structure of a Fibonacci Heap. A Fibonacci Heap is a collection of heap-ordered trees as same as a Binomial Heap. All of the roots of a Fibonacci Heap are in a **circular linked list** instead of an array. Non-root nodes will also be placed in a circular linked list with all of its siblings. The following two pictures visualize this data structure. [1] (a) shows what the heap looks like and (b) shows how it is implemented using pointers and circular linked list.
 >![](https://github.com/woodfrog/FibonacciHeap/blob/master/readme_pics/2.png?raw=true)
 
 ### 2. Data Structure Abstraction
@@ -111,7 +111,7 @@ The following pseudo-code shows the detailed traversal process in `extract_min()
 
 This method takes a pointer to a `FibHeapNode` and an integer as input arguments. The integer is used as the new key of the node.
     
-This method changes the key of the input node, cuts the node from its parent, and adds the node into the root linked list. The mark of its parent needs to be evaluated. The mark being true indicates the parent has lost one child before. In this case, the parent node should be cut by the subroutine `cascading_cut()` and moved to the root list. This process will continue until a node with a mark being false appears. The number of nodes being cut is **1+c**, where c is the number execution of `cascading_cut()`.
+This method changes the key of the input node, cuts the node from its parent and adds the node into the root linked list. The mark of its parent needs to be evaluated. The mark being true indicates the parent node has lost one child before. In this case, the parent node should be cut by the subroutine `cascading_cut()` and moved to the root list. This process will keep running until a node with a mark being false appears. The number of nodes being cut is **1+c**, where c is the number execution of `cascading_cut()`.
 
 #### e). `void delete_node(FibHeapNode* x);`
 
