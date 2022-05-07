@@ -2,6 +2,8 @@
 #define _FIB_HEAP_H
 
 #include <cmath>
+#include <vector>
+using namespace std;
 
 namespace fib_heap{
 
@@ -15,6 +17,7 @@ struct FibHeapNode
 	FibHeapNode* child;
 	int degree;
 	bool mark;
+	int id; // the vertex id
 };
 
 		
@@ -48,7 +51,7 @@ public:
 	/*Delete a specified node*/
 	void delete_node(FibHeapNode* x);
 
-private:
+// private:
 	static const int m_minimumKey; 
 	FibHeapNode* _create_node(int newKey);
 	void _insert_node(FibHeapNode* newNode);
