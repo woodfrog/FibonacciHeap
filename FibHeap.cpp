@@ -66,14 +66,13 @@ void FibHeap::_insert_node(FibHeapNode* newNode)
 *******************************************************************/
 void FibHeap::_remove_from_circular_list(FibHeapNode* x)
 {
-	if (x->right == x) // the root list only has one node before the operation
-	{
-		return;
-	}
-	FibHeapNode* leftSib = x->left; 
-	FibHeapNode* rightSib = x->right;
-	leftSib->right = rightSib;
-	rightSib->left = leftSib;
+    if (x->right == x)
+        return;
+    FibHeapNode* leftSib = x->left;
+    FibHeapNode* rightSib = x->right;
+    leftSib->right = rightSib;
+    rightSib->left = leftSib;
+    x->left = x->right = x;
 }
 
 
@@ -106,22 +105,23 @@ FibHeapNode* FibHeap::_merge(FibHeapNode* a, FibHeapNode* b)
 ***********************************************************/
 FibHeapNode* FibHeap::_extract_min_node()
 {
-	FibHeapNode* min = m_minNode;
-	if ( min != nullptr) // the heap is not empty
-	{
-		_unparent_all(min->child);
-		_merge(min, min->child); // merge the child circular list into root
-		_remove_from_circular_list(min);
-		if ( min == min->right) // the heap will be empty after the operation
-			m_minNode = nullptr;
-		else
-		{
-			m_minNode = min->right; // minNode need not be the minimum at this time
-			_consolidate();
-		}
-		m_numOfNodes--;
-	}
-	return min;
+	FibHeapNode* mn = m_minNode;
+    if (mn == nullptr){
+        return nullptr;
+    }
+    _unparent_all(mn->child);
+    _merge(mn, mn->child);
+    if (mn == mn->right){
+        m_minNode = nullptr;
+    }else{
+        m_minNode = mn->right;
+    }
+    _remove_from_circular_list(mn);
+    if (m_minNode != nullptr){
+        _consolidate();
+    }
+    m_numOfNodes--;
+    return mn;
 }
 
 /*make all nodes' parent nullptr in a circular list*/
@@ -139,56 +139,54 @@ void FibHeap::_unparent_all(FibHeapNode* x)
 
 void FibHeap::_consolidate()
 {
-	int Dn = (int)( log2(m_numOfNodes) / log2(1.618) ) ;
-	FibHeapNode** A = new FibHeapNode*[Dn+1];
-	for (int i = 0; i < Dn+1; i++)
-		A[i] = nullptr;
-	FibHeapNode* x = m_minNode;
-	bool breakFlag = false;
-	while(true)
-	{
-		int d = x->degree;
-		while( A[d] != nullptr)
-		{
-			FibHeapNode* y = A[d]; 
-			if (y == x)
-			{
-				breakFlag = true;  // when y == x, all root nodes have different degree
-				break;			   // so break out of the whole loop
-			}					
-			if ( x->key > y->key ) // swap x and y, so x always points to the 
-								// node with smaller key
-			{
-				FibHeapNode* temp = x;
-				x = y;
-				y = temp;				
-			}
-			_make_child(y, x); // make y the child of x
-			A[d++] = nullptr; // now the new node has (d + 1) child, so A[d] = nullptr,d = d + 1  
-		}
-		if (breakFlag)
-			break;
-		A[x->degree] = x;
-		x = x->right; // to next node in the root list
-	}
-	m_minNode = x;  // update the m_minNode
-	FibHeapNode* iter = x;
-	do {
-		if ( iter->key < m_minNode->key ) 
-			m_minNode = iter;
-		iter = iter->right;
-	} while( iter != x );
-	delete []A;
+    int Dn = (int)(log2(m_numOfNodes) / log2(1.618));
+    FibHeapNode** A = new FibHeapNode*[Dn + 1];
+    for(int i = 0; i < Dn + 1; i++){
+        A[i] = nullptr;
+    }
+    vector<FibHeapNode*> nodeList; // It needs optimization! It makes the time longer now.
+    auto node = m_minNode;
+    do{
+        nodeList.emplace_back(node);
+        node = node->right;
+    } while (node != m_minNode);
+    for (auto e: nodeList){
+        int d = e->degree;
+        _remove_from_circular_list(e);
+        while(A[d] != nullptr){
+            auto tmp = A[d];
+            if (e->key > tmp->key){
+                swap(e, tmp);
+            }
+            _make_child(tmp, e);
+            A[d++] = nullptr;
+        }
+        A[e->degree] = e;
+        m_minNode = e;
+    }
+    for (int i = 0; i < Dn + 1; i++){
+        if (A[i] != nullptr && A[i] != m_minNode){
+            _merge(m_minNode, A[i]);
+        }
+    }
+    FibHeapNode* flag = m_minNode;
+    FibHeapNode* iter = flag;
+    do{
+        if (iter->key < m_minNode->key){
+            m_minNode = iter;
+        }
+        iter = iter->right;
+    } while (iter != flag);
+    delete []A;
 }
+
 
 void FibHeap::_make_child(FibHeapNode *child, FibHeapNode *parent)
 {
-	_remove_from_circular_list(child);
-	child->left = child->right = child;
-	child->parent = parent;
-	parent->child = _merge(parent->child, child); // add child into parent's children list
-	parent->degree++;
-	child->mark = false;
+    child->parent = parent;
+    parent->child = _merge(parent->child, child);
+    parent->degree++;
+    child->mark = false;
 }
 
 void FibHeap::_decrease_key(FibHeapNode* x, int newKey)
@@ -212,19 +210,12 @@ void FibHeap::_decrease_key(FibHeapNode* x, int newKey)
 ***********************************************************************/
 void FibHeap::_cut(FibHeapNode* x, FibHeapNode* y)
 {
-	_remove_from_circular_list(x);   
-	if (x->right == x) // x is the only child of y
-	{
-		y->child = nullptr;
-	}
-	else
-	{
-		y->child = x->right; // update y's child 
-	}
-	y->degree--;
-	_merge(m_minNode, x);
-	x->parent = nullptr;
-	x->mark = false;
+    y->child = (x == x->right ? nullptr : x->right);
+    _remove_from_circular_list(x);
+    y->degree--;
+    _merge(m_minNode, x);
+    x->parent = nullptr;
+    x->mark = false;
 }
 
 /***********************************************************************
